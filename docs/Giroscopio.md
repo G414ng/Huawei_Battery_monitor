@@ -1,28 +1,32 @@
-# Protocolo de Desactivación de Giroscopio - Batería Huawei ESM-48150B1
+# Gyroscope Disablement Protocol - Huawei ESM-48150B1 Battery
 
-## Descripción General
+## General Description
 
-Protocolo no documentado para desactivar el giroscopio integrado en las baterías Huawei ESM-48150B1 mediante comandos Modbus RTU sobre TCP.
+Undocumented protocol for disabling the gyroscope integrated into Huawei ESM-48150B1 batteries using Modbus RTU commands over TCP.
 
-## Especificaciones Técnicas
+## Technical Specifications
 
-### Comunicación
-- **Protocolo**: Modbus RTU sobre TCP
-- **Puerto TCP**: 8235
+### Communication
+- **Protocol**: Modbus RTU over TCP
+- **TCP Port**: 8235
 - **Slave ID**: 214 (0xD6)
-- **Timeout recomendado**: 1000ms
+- **Recommended Timeout**: 1000ms
 
-### Registros Modbus
+### Modbus Registers
 
-| Registro | Tipo | Descripción | Acceso |
+| Register | Type | Description | Access |
+
 |----------|------|-------------|--------|
-| `0x0000` | Holding | Estado general del sistema | R |
-| `0x1118` | Holding | Estado del giroscopio (0=Off, 1=On) | R |
-| `0x117C-0x118B` | Holding | Área de clave criptográfica (16 registros) | W |
 
-## Estructura del Protocolo
+`0x0000` | Holding | General system status | R |
 
-### Secuencia de Desactivación
+`0x1118` | Holding | Gyroscope status (0=Off, 1=On) | R |
+
+| `0x117C-0x118B` | Holding | Cryptographic Key Area (16 registers) | W |
+
+## Protocol Structure
+
+### Deactivation Sequence
 
 ```
 1. Read(0x0000)          → Verificar estado del sistema
@@ -57,17 +61,17 @@ Protocolo no documentado para desactivar el giroscopio integrado en las batería
    D6        10         11         7C         00          10      [2 bytes]
 ```
 
-## Clave Criptográfica
+## Cryptographic Key
 
-### Características
+### Characteristics
 
-- **Longitud**: 32 bytes (256 bits)
-- **Formato**: Binario sin codificación
-- **Validez**: 24 horas (cambia diariamente)
-- **Alcance**: Universal (misma clave para todas las baterías del mismo modelo)
-- **Entropía**: Alta (~88% bytes únicos)
+- **Length**: 32 bytes (256 bits)
+- **Format**: Unencoded binary
+- **Validity**: 24 hours (changes daily)
+- **Scope**: Universal (same key for all batteries of the same model)
+- **Entropy**: High (~88% unique bytes)
 
-### Estructura de la Clave
+### Key Structure
 
 ```
 Offset  +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F
@@ -75,16 +79,16 @@ Offset  +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F
 0x10    [-------------- continuación... ------------------]
 ```
 
-### Patrón de Generación
+### Generation Pattern
 
-- Algoritmo basado en fecha (cambia a medianoche)
-- No contiene identificadores de batería
-- Probablemente SHA-256 con sal propietaria
-- Sin relación aparente con parámetros del dispositivo
+- Date-based algorithm (changes at midnight)
+- Contains no battery identifiers
+- Likely SHA-256 with proprietary salt
+- No apparent relationship to device parameters
 
-## Ejemplos de Trama
+## Frame Examples
 
-### Write Multiple Registers - Solicitud
+### Write Multiple Registers - Request
 
 ```
 D6 10 11 7C 00 10 20 25 BD 4C CF 7B 23 EF 2F 43 C3 88 3B 76 74 A3 69
@@ -110,19 +114,19 @@ D6 03 02 00 01 0D 96    // Giroscopio activo (valor = 1)
 D6 03 02 00 00 CC 56    // Giroscopio inactivo (valor = 0)
 ```
 
-## Notas Importantes
+## Important Notes
 
-1. **Doble Escritura**: El protocolo requiere escribir la clave dos veces para confirmar la operación
-2. **Verificación de Estado**: Siempre verificar el registro 0x1118 después de cada escritura
-3. **Clave Universal**: La misma clave funciona para todas las baterías durante el período de validez
-4. **Sin Documentación Oficial**: Este protocolo no aparece en los manuales del fabricante
-5. **Cambio Diario**: La clave cambia cada 24 horas (zona horaria por determinar)
+1. **Double Write**: The protocol requires writing the key twice to confirm the operation.
+2. **Status Verification**: Always verify the 0x1118 register after each write.
+3. **Universal Key**: The same key works for all batteries during the validity period.
+4. **No Official Documentation**: This protocol is not listed in the manufacturer's manuals.
+5. **Daily Change**: The key changes every 24 hours (time zone to be determined).
 
-## Diagrama de Flujo
+## Flowchart
 
 ```
 ┌─────────────┐
-│   INICIO    │
+│   START     │
 └──────┬──────┘
        │
        ▼
@@ -166,10 +170,10 @@ D6 03 02 00 00 CC 56    // Giroscopio inactivo (valor = 0)
      └─────────┘
 ```
 
-## Consideraciones de Implementación
+## Implementation Considerations
 
-- Implementar timeout de 1 segundo para cada operación
-- Manejar reconexión en caso de pérdida de comunicación
-- Validar longitud de clave antes de enviar (exactamente 32 bytes)
-- Considerar reintentos en caso de fallo de comunicación
-- Logging detallado para troubleshooting
+- Implement a 1-second timeout for each operation
+- Handle reconnection in case of communication loss
+- Validate key length before sending (exactly 32 bytes)
+- Consider retries in case of communication failure
+- Detailed logging for troubleshooting
