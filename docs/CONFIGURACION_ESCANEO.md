@@ -1,12 +1,12 @@
-# 🔎 Configuración y Escaneo de Dispositivos
+# 🔎 Device Configuration and Scanning
 
-[<< Volver al README principal](../README.md) | [Ir a Guía de Uso >>](USO.md)
+[<< Back to Main README](../README.md) | [Go to User Guide >>](USO.md)
 
-El sistema incluye herramientas para configurar la comunicación y descubrir dispositivos Modbus en la red, especialmente diseñadas para identificar baterías Huawei ESM-48150B1.
+The system includes tools for configuring communication and discovering Modbus devices on the network, specifically designed to identify Huawei ESM-48150B1 batteries.
 
-## Archivo de Configuración
+## Configuration File
 
-El sistema utiliza un archivo `config.json` en la raíz del proyecto para almacenar todos los parámetros de configuración y mantener información sobre los dispositivos descubiertos.
+The system uses a `config.json` file in the project root to store all configuration parameters and maintain information about the discovered devices.
 
 ```json
 {
@@ -40,18 +40,23 @@ El sistema utiliza un archivo `config.json` en la raíz del proyecto para almace
 }
 ```
 
-### Estructura de config.json
+### config.json Structure
 
-| Sección | Descripción |
-|---------|-------------|
-| `serial` | Configuración del puerto serie (puerto COM, baudrate, paridad, etc.) |
-| `scanning` | Parámetros para el escaneo de dispositivos (rango de IDs, intentos, etc.) |
-| `application` | Configuración de la aplicación y lista de dispositivos descubiertos |
-| `device_types` | Definición de tipos de dispositivos y sus características |
+| Section | Description |
 
-## Herramienta de Escaneo
+---------|-------------|
 
-El script `scan_modbus_devices.py` permite descubrir automáticamente dispositivos Modbus RTU en el bus, identificando especialmente baterías Huawei.
+`serial` | Serial port configuration (COM port, baud rate, parity, etc.) |
+
+`scanning` | Parameters for device scanning (ID range, attempts, etc.) |
+
+`application` | Application configuration and list of discovered devices |
+
+`device_types` | Definition of device types and their characteristics |
+
+## Scanning Tool
+
+The `scan_modbus_devices.py` script allows automatic discovery of Modbus RTU devices on the bus, specifically identifying Huawei batteries.
 
 <div align="center">
   <img src="../static/images/scan_example.jpg" alt="Ejemplo de escaneo" style="width: 80%; max-width: 600px; border: 2px solid #ddd; border-radius: 8px;">
@@ -63,57 +68,63 @@ El script `scan_modbus_devices.py` permite descubrir automáticamente dispositiv
 </div>
 
 
-> ⚠️ **Nota**: Si la imagen anterior no aparece, debes capturar una pantalla del proceso de escaneo y guardarla como `static/images/scan_example.png`
+> ⚠️ **Note**: If the image above does not appear, you must capture a screenshot of the scanning process and save it as `static/images/scan_example.png`
 
-### Características del Escáner
+### Scanner Features
 
-- **Escaneo inteligente**: Busca dispositivos en un rango de IDs configurable
-- **Identificación automática**: Detecta baterías Huawei basándose en patrones de respuesta
-- **Reintentos adaptativos**: Implementa reintentos con espera progresiva para dispositivos lentos
-- **Registro completo**: Captura datos clave como voltaje, corriente, SOC y SOH
-- **Actualización de configuración**: Guarda automáticamente los dispositivos encontrados
+- **Smart Scanning**: Searches for devices within a configurable ID range
+- **Automatic Identification**: Detects Huawei batteries based on response patterns
+- **Adaptive Retries**: Implements progressive wait retries for slow devices
+- **Full Logging**: Captures key data such as voltage, current, SOC, and SOH
+- **Configuration Update**: Automatically saves found devices
 
-### Uso del Escáner
+### Using the Scanner
 
 ```bash
-# Ejecutar escaneo de dispositivos
+# Run device scan
 python scan_modbus_devices.py
 ```
 
-Durante el escaneo:
-1. Se conectará al puerto configurado en `config.json`
-2. Buscará dispositivos en el rango de IDs especificado
-3. Identificará automáticamente los dispositivos encontrados
-4. Actualizará el archivo `config.json` con la información obtenida
+During the scan:
+1. It will connect to the port configured in `config.json`
+2. It will search for devices within the specified ID range
+3. It will automatically identify the devices found
+4. It will update the `config.json` file with the information obtained
 
-> ⚠️ **ATENCIÓN**: El escaneo reemplazará la lista actual de dispositivos descubiertos en la configuración.
+> ⚠️ **ATTENTION**: The scan will replace the current list of discovered devices in the configuration.
 
-### Parámetros de Escaneo
+### Scan Parameters
 
-El comportamiento del escáner se puede personalizar modificando los siguientes parámetros en la sección `scanning` del archivo `config.json`:
+The scanner's behavior can be customized by modifying the following parameters in the `scanning` section of the `config.json` file:
 
-| Parámetro | Descripción |
+| Parameter | Description |
+
 |-----------|-------------|
-| `start_id` | ID inicial para el rango de escaneo (por defecto: 214) |
-| `end_id` | ID final para el rango de escaneo (por defecto: 231) |
-| `max_attempts` | Número máximo de intentos por dispositivo (por defecto: 3) |
-| `progressive_wait` | Si es `true`, aumenta el tiempo de espera progresivamente entre intentos |
-| `scan_timeout` | Tiempo de espera (en segundos) para cada intento de escaneo (por defecto: 0.5) |
 
-### Salida del Escaneo
+`start_id` | Starting ID for the scan range (default: 214) |
 
-Para cada dispositivo encontrado, se registra:
+`end_id` | Ending ID for the scan range (default: 231) |
 
-- **ID**: Identificador Modbus del dispositivo
-- **Tipo**: "huawei_battery" o "unknown_device"
-- **Voltaje**: Valor del voltaje de la batería (V)
-- **Corriente**: Valor de la corriente (A)
-- **Estado de Carga (SOC)**: Porcentaje de carga
-- **Estado de Salud (SOH)**: Indicador de salud de la batería
+`max_attempts` | Maximum number of attempts per device (default: 3) |
 
-## Estructura de Datos de Dispositivos
+`progressive_wait` | If `true`, the wait time between attempts increases progressively |
 
-Cada dispositivo descubierto se guarda con la siguiente estructura en el archivo `config.json`:
+`scan_timeout` | Wait time (in seconds) for each scan attempt (default: 0.5) |
+
+### Scan Output
+
+For each device found, the following is recorded:
+
+- **ID**: Modbus identifier of the device
+- **Type**: "huawei_battery" or "unknown_device"
+- **Voltage**: Battery voltage value (V)
+- **Current**: Current value (A)
+- **State of Charge (SOC)**: Percentage of charge
+- **State of Health (SOH)**: Battery health indicator
+  
+## Device Data Structure
+
+Each discovered device is saved with the following structure in the `config.json` file:
 
 ```json
 {
@@ -134,32 +145,41 @@ Cada dispositivo descubierto se guarda con la siguiente estructura en el archivo
 }
 ```
 
-### Campos de datos de dispositivo
+### Device Data Fields
 
-| Campo | Descripción |
-|-------|-------------|
-| `id` | ID del esclavo Modbus |
-| `register_0` | Valor crudo del primer registro (útil para identificación) |
-| `discovery_date` | Fecha y hora del primer descubrimiento |
-| `last_seen` | Última vez que se vio el dispositivo |
-| `custom_name` | Nombre personalizable para el dispositivo |
-| `registers` | Valores procesados de los registros principales |
-| `raw_values` | Valores crudos de los registros (para depuración) |
-| `type` | Tipo de dispositivo identificado |
+| Field | Description |
 
-## Identificación de Baterías Huawei
+-------|-------------|
 
-El sistema identifica automáticamente las baterías Huawei ESM-48150B1 basándose en:
+`id` | Modbus slave ID |
 
-1. **Patrones de voltaje**: Valores típicos entre 30V y 60V
-2. **Estructura de registros**: Disposición específica de los registros de datos
-3. **Respuesta a comandos**: Comportamiento ante solicitudes de lectura
+`register_0` | Raw value of the first register (useful for identification) |
 
-Las baterías correctamente identificadas se etiquetan como `huawei_battery` en la configuración, mientras que otros dispositivos se marcan como `unknown_device`.
+`discovery_date` | Date and time of first discovery |
 
-## Uso Programático
+`last_seen` | Last time the device was seen |
 
-El módulo puede ser importado y utilizado en código Python personalizado:
+`custom_name` | Customizable name for the device |
+
+`registers` | Processed values ​​of the main registers |
+
+`raw_values` | Raw values ​​of the registers (for debugging) |
+
+`type` | Type of device identified |
+
+## Huawei Battery Identification
+
+The system automatically identifies Huawei ESM-48150B1 batteries based on:
+
+1. **Voltage Patterns**: Typical values ​​between 30V and 60V
+2. **Register Structure**: Specific arrangement of data registers
+3. **Command Response**: Behavior when read requests are made
+
+Correctly identified batteries are labeled `huawei_battery` in the configuration, while other devices are marked as `unknown_device`.
+
+## Programmatic Usage
+
+The module can be imported and used in custom Python code:
 
 ```python
 from modbus_app.client import connect_client, disconnect_client, get_client
@@ -182,7 +202,7 @@ client = get_client()
 disconnect_client()
 ```
 
-### Ejemplo: Escaneo programático de un dispositivo específico
+### Example: Programmatic scanning of a specific device
 
 ```python
 from modbus_app.client import connect_client, disconnect_client, get_client
@@ -212,35 +232,44 @@ if not result.isError() and hasattr(result, 'registers'):
 disconnect_client()
 ```
 
-## Solución de Problemas
+## Troubleshooting
 
-Si experimentas dificultades con el escaneo:
+If you experience difficulties with scanning:
 
-- **Verificar conexión física**: Asegúrate de que el adaptador USB-RS485 esté correctamente conectado
-- **Comprobar configuración serial**: Confirma que baudrate, paridad y bits coincidan con la batería
-- **Ajustar timeout**: Para redes lentas, aumenta `scan_timeout` en `config.json`
-- **Revisar rango de IDs**: Verifica que el rango incluya el ID de tus dispositivos (típicamente 217 para baterías Huawei)
-- **Aumentar intentos**: Para dispositivos que tardan en "despertar", aumenta `max_attempts`
+- **Check physical connection**: Ensure the USB-RS485 adapter is properly connected.
+- **Check serial configuration**: Confirm that the baud rate, parity, and bit settings match the battery.
+- **Adjust timeout**: For slow networks, increase `scan_timeout` in `config.json`.
+- **Check ID range**: Verify that the range includes your device IDs (typically 217 for Huawei batteries).
+- **Increase attempts**: For devices that take a long time to wake up, increase `max_attempts`.
 
-### Problemas comunes:
+### Common problems:
 
-1. **No se encuentra ningún dispositivo**:
-   - Verifica las conexiones físicas
-   - Confirma que los parámetros seriales (`baudrate`, `parity`, etc.) coincidan con la configuración de la batería
-   - Prueba diferentes rangos de ID (las baterías Huawei típicamente usan ID 217)
+1. **No device found**:
 
-2. **Dispositivo identificado como "unknown_device"**:
-   - La batería puede estar en modo de suspensión profunda
-   - Los valores leídos pueden estar fuera de rangos esperados
-   - Intenta realizar una operación de "despertar" antes del escaneo
+- Check the physical connections.
 
-3. **Error de timeout durante el escaneo**:
-   - Aumenta el valor de `scan_timeout` en la configuración
-   - Habilita `progressive_wait` para dar más tiempo en reintentos
-   - Aumenta `max_attempts` para dispositivos de respuesta lenta
+- Confirm that the serial parameters (`baud rate`, `parity`, etc.) match the battery settings.
 
-Para un análisis más detallado de problemas de comunicación, consulta la sección [Solución de Problemas](SOLUCION_PROBLEMAS.md).
+- Try different ID ranges (Huawei batteries typically use ID 217).
+
+2. **Device Identified as "unknown_device"**:
+
+- The battery may be in deep sleep mode
+
+- The values ​​read may be outside expected ranges
+
+- Attempt to perform a "wake-up" operation before scanning
+
+3. **Timeout error during scanning**:
+
+- Increase the `scan_timeout` value in the settings
+
+- Enable `progressive_wait` to allow more time for retries
+
+- Increase `max_attempts` for slow-response devices
+
+For a more detailed analysis of communication problems, see the [Troubleshooting](TROUBLESHOOT.md) section.
 
 ---
 
-[<< Volver al README principal](../README.md) | [Ir a Guía de Uso >>](USO.md)
+[<< Back to Main README](../README.md) | [Go to User Guide >>](USER.md)
