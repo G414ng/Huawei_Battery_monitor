@@ -1,450 +1,521 @@
-# Protocolo de Autenticación Propietario - Baterías Huawei ESM
+# Proprietary Authentication Protocol - Huawei ESM Batteries
 
-## ⚠️ INFORMACIÓN CRÍTICA
+## ⚠️ CRITICAL INFORMATION
 
-Este protocolo **NO está documentado** en la especificación Modbus estándar de Huawei. Es un protocolo propietario obtenido mediante ingeniería inversa y análisis de tráfico de comunicaciones.
-
----
-
-## 1. Información General
-
-**Modelos Compatibles:** ESM-48100B1, ESM-48150B1, ESM-48100B3, ESM-48100U2, y familia ESM  
-**Protocolo Base:** Modbus RTU con extensiones propietarias  
-**Requisito:** Autenticación obligatoria antes de acceder a funciones FC41  
-**Persistencia:** El estado de autenticación se mantiene hasta desconexión física  
-
-### 1.1 ¿Por qué es Necesaria la Autenticación?
-
-- Las baterías Huawei ESM implementan **protección por software**
-- Sin autenticación, solo responden a funciones Modbus básicas (FC03, FC04)
-- La función **FC41** (lectura de información del dispositivo) está **bloqueada** por defecto
-- La autenticación desbloquea acceso completo al BMS
+This protocol **is NOT documented** in Huawei's standard Modbus specification. It is a proprietary protocol obtained through reverse engineering and analysis of communication traffic.
 
 ---
 
-## 2. Protocolo de Wake-Up (Opcional pero Recomendado)
+## 1. General Information
 
-### 2.1 Descripción
+**Compatible Models:** ESM-48100B1, ESM-48150B1, ESM-48100B3, ESM-48100U2, and ESM family
+**Base Protocol:** Modbus RTU with proprietary extensions
+**Requirement:** Mandatory authentication before accessing FC41 functions
+**Persistence:** Authentication status is maintained until physical disconnection
 
-Las baterías pueden estar en **modo de ahorro de energía** y no responder inmediatamente. El protocolo de wake-up las "despierta" antes de la autenticación.
+### 1.1 Why is Authentication Necessary?
 
-### 2.2 Implementación
+- Huawei ESM batteries implement **software protection**
+- Without authentication, they only respond to basic Modbus functions (FC03, FC04)
+- The **FC41** function (reading device information) is **blocked** by default
+- Authentication unlocks full access to the BMS
 
-**Comando:** Lectura repetitiva del registro básico de voltaje
+---
+
+## 2. Wake-Up Protocol (Optional but Recommended)
+
+### 2.1 Description
+
+Batteries may be in **power-saving mode** and not respond immediately. The wake-up protocol "wakes them up" before authentication.
+
+### 2.2 Implementation
+
+**Command:** Repetitive reading of the basic voltage register
 ```
 [slave_id] 03 00 00 00 01 [CRC]
 ```
 
-**Parámetros de Wake-Up:**
+**Wake-Up Parameters:**
 ```
-Máximo intentos: 5
-Timeout por intento: 0.8 segundos
-Patrón de espera: 1s, 2s, 4s, 8s, 16s (progresivo)
-Criterio de éxito: Respuesta válida con voltaje > 0
+Maximum attempts: 5
+Timeout per attempt: 0.8 seconds
+Wait pattern: 1s, 2s, 4s, 8s, 16s (progressive)
+Success criterion: Valid response with voltage > 0
 ```
 
-**Respuesta Exitosa:**
+**Successful Response:**
 ```
 [slave_id] 03 02 [voltage_MSB] [voltage_LSB] [CRC]
 ```
 
-**Interpretación:** Si el voltaje obtenido es mayor a 0V (típicamente 40-55V), la batería está despierta y lista para autenticación.
+**Interpretation:** If the voltage obtained is greater than 0V (typically 40-55V), the battery is awake and ready for authentication.
 
 ---
 
-## 3. Secuencia de Autenticación de 3 Pasos
+## 3. 3-Step Authentication Sequence
 
-### 3.1 Visión General
+### 3.1 Overview
 
-| Paso | Función | Propósito | Timeout |
-|------|---------|-----------|---------|
-| 1 | FC03 Especial | Comando de desbloqueo | 1.0s |
-| 2 | FC10 | Sincronización fecha/hora | 1.0s |
-| 3 | FC41 | Validación de acceso | 2.0s |
+| Step | Function | Purpose | Timeout |
 
-### 3.2 Pasos Intermedios
+------|---------|-----------|---------|
 
-**Entre pasos:** 0.5-0.8 segundos de pausa para estabilización  
-**Después del Paso 3:** 0.3 segundos antes del primer FC41 real
+| 1 | FC03 Special | Unlock Command | 1.0s |
+
+| 2 | FC10 | Date/Time Synchronization | 1.0s |
+
+| 3 | FC41 | Access Validation | 2.0s |
+
+### 3.2 Intermediate Steps
+
+**Between steps:** 0.5-0.8 second pause for stabilization
+**After Step 3:** 0.3 seconds before the first actual FC41
 
 ---
 
-## 4. Paso 1: Comando de Desbloqueo Especial
+## 4. Step 1: Special Unlock Command
 
-### 4.1 Descripción
+### 4.1 Description
 
-Utiliza la función FC03 (Read Holding Registers) con parámetros específicos para desbloquear el acceso a la batería.
+Uses the FC03 (Read Holding Registers) function with specific parameters to unlock access to the battery.
 
-### 4.2 Comando
+### 4.2 Command
 
 ```
-Formato: [slave_id] 03 01 06 00 01 [CRC]
+Format: [slave_id] 03 01 06 00 01 [CRC]
 ```
 
-**Desglose del Comando:**
-| Byte | Valor | Descripción |
+**Command Breakdown:**
+| Byte | Value | Description |
+
 |------|-------|-------------|
-| 0 | slave_id | ID de la batería (típicamente 214-218) |
-| 1 | 0x03 | Función 03 (Read Holding Registers) |
-| 2 | 0x01 | Dirección MSB (0x0106) |
-| 3 | 0x06 | Dirección LSB |
-| 4 | 0x00 | Cantidad MSB (1 registro) |
-| 5 | 0x01 | Cantidad LSB |
+
+| 0 | slave_id | Battery ID (typically 214-218) |
+
+| 1 | 0x03 | Function 03 (Read Holding Registers) |
+
+| 2 | 0x01 | MSB Address (0x0106) |
+
+| 3 | 0x06 | LSB Address |
+
+| 4 | 0x00 | Number of MSBs (1 register) |
+
+| 5 | 0x01 | Number of LSBs |
+
 | 6-7 | CRC | CRC16 Modbus (little-endian) |
 
-### 4.3 Respuesta Esperada
+### 4.3 Expected Response
 
 ```
-Formato: [slave_id] 03 02 00 XX [CRC]
-Longitud: 7 bytes exactos
+Format: [slave_id] 03 02 00 XX [CRC]
+Length: Exactly 7 bytes
 ```
 
-**Validaciones Críticas:**
-- `response[0] == slave_id` (ID correcto)
-- `response[1] == 0x03` (función correcta)
-- `response[2] == 0x02` (byte count = 2)
-- `response[3] == 0x00` (patrón esperado)
-- `len(response) == 7` (longitud exacta)
+**Critical Validations:**
+- `response[0] == slave_id` (Correct ID)
+- `response[1] == 0x03` (Correct function)
+- `response[2] == 0x02` (Byte count = 2)
+- `response[3] == 0x00` (Expected pattern)
+- `len(response) == 7` (Exact length)
 
-### 4.4 Ejemplo de Tráfico Real
+### 4.4 Example of Real Traffic
 
 ```
-TX: [D9 03 01 06 00 01 E4 2F]  // Comando para batería ID 217
-RX: [D9 03 02 00 03 F8 45]     // Respuesta exitosa
+TX: [D9 03 01 06 00 01 E4 2F] // Command for battery ID 217
+RX: [D9 03 02 00 03 F8 45] // Successful response
 ```
 
 ---
 
-## 5. Paso 2: Sincronización de Fecha/Hora
+## 5. Step 2: Date/Time Synchronization
 
-### 5.1 Descripción
+### 5.1 Description
 
-Envía la fecha y hora actual del sistema a la batería usando FC10 (Write Multiple Registers). **Este paso es obligatorio** aunque la batería tenga su propio RTC.
+Sends the current system date and time to the battery using FC10 (Write Multiple Registers). **This step is mandatory** even if the battery has its own RTC.
 
-### 5.2 Comando
+### 5.2 Command
 
 ```
-Formato: [slave_id] 10 10 00 00 06 0C [FECHA/HORA] [CRC]
+Format: [slave_id] 10 10 00 00 06 0C [DATE/TIME] [CRC]
 ```
 
-**Estructura del Comando:**
-| Bytes | Valor | Descripción |
+**Command Structure:**
+| Bytes | Value | Description |
+
 |-------|-------|-------------|
-| 0 | slave_id | ID de la batería |
-| 1 | 0x10 | Función 10 (Write Multiple Registers) |
-| 2-3 | 0x10 0x00 | Dirección inicial: 0x1000 |
-| 4-5 | 0x00 0x06 | Cantidad: 6 registros (12 bytes) |
-| 6 | 0x0C | Byte count: 12 bytes de datos |
-| 7-18 | [DATOS] | Fecha/hora (ver formato abajo) |
-| 19-20 | CRC | CRC16 Modbus |
 
-### 5.3 Formato de Fecha/Hora
+| 0 | slave_id | Battery ID |
 
-**12 bytes organizados como 6 registros de 16-bit (big-endian):**
+| 1 | 0x10 | Function 10 (Write Multiple Registers) |
 
-| Bytes | Registro | Descripción | Formato | Ejemplo |
+| 2-3 | 0x10 0x00 | Starting address: 0x1000 |
+
+4-5 | 0x00 0x06 | Number of registers: 6 (12 bytes) |
+
+6 | 0x0C | Byte count: 12 bytes of data |
+
+7-18 | [DATA] | Date/Time (see format below) |
+
+19-20 | CRC | CRC16 Modbus |
+
+### 5.3 Date/Time Format
+
+**12 bytes organized as 6 16-bit (big-endian) registers:**
+
+| Bytes | Register | Description | Format | Example |
+
 |-------|----------|-------------|---------|---------|
-| 7-8 | 1 | Año | YYYY (16-bit) | 0x07E8 = 2024 |
-| 9-10 | 2 | Mes | 0x00 + MM | 0x000C = Diciembre |
-| 11-12 | 3 | Día | 0x00 + DD | 0x001F = 31 |
-| 13-14 | 4 | Hora | 0x00 + HH | 0x0017 = 23:xx |
-| 15-16 | 5 | Minuto | 0x00 + mm | 0x003B = xx:59 |
-| 17-18 | 6 | Segundo | 0x00 + ss | 0x003B = xx:xx:59 |
 
-### 5.4 Respuesta Esperada
+7-8 | 1 | Year | YYYY (16-bit) | 0x07E8 = 2024 |
 
-```
-Formato: [slave_id] 10 10 00 00 06 [CRC]
-Longitud: 8 bytes exactos
-```
+9-10 | 2 | Month | 0x00 + MM | 0x000C = December |
+| 11-12 | 3 | Day | 0x00 + DD | 0x001F = 31 |
+| 13-14 | 4 | Time | 0x00 + HH | 0x0017 = 23:xx |
+| 15-16 | 5 | Minute | 0x00 + mm | 0x003B = xx:59 |
+| 17-18 | 6 | Second | 0x00 + ss | 0x003B = xx:xx:59 |
 
-**Validaciones:**
-- Echo de los bytes 2-5 del comando original
-- Confirma escritura de 6 registros en 0x1000
-
-### 5.5 Ejemplo de Tráfico Real
+### 5.4 Expected Response
 
 ```
-// Para 31/Dec/2024 23:59:59
+Format: [slave_id] 10 10 00 00 06 [CRC]
+Length: Exactly 8 bytes
+```
+
+**Validations:**
+- Echo of bytes 2-5 of the original command
+- Confirms writing 6 records to 0x1000
+
+### 5.5 Example of Real Traffic
+
+```
+// For 31/Dec/2024 23:59:59
 TX: [D9 10 10 00 00 06 0C 07 E8 00 0C 00 1F 00 17 00 3B 00 3B XX XX]
-RX: [D9 10 10 00 00 06 XX XX]  // Echo de confirmación
+RX: [D9 10 10 00 00 06 XX XX] // Confirmation echo
 ```
 
 ---
 
-## 6. Paso 3: Validación de Acceso
+## 6. Step 3: Access Validation
 
-### 6.1 Descripción
+### 6.1 Description
 
-Utiliza la función personalizada **FC41** para completar la validación y habilitar el acceso completo a todas las funciones FC41 posteriores.
+Uses the custom function **FC41** to complete validation and enable full access to all subsequent FC41 functions.
 
-### 6.2 Comando
+### 6.2 Command
 
 ```
-Formato: [slave_id] 41 05 01 04 [CRC]
+Format: [slave_id] 41 05 01 04 [CRC]
 ```
 
-**Desglose del Comando:**
-| Byte | Valor | Descripción |
+**Command Breakdown:**
+| Byte | Value | Description |
+
 |------|-------|-------------|
-| 0 | slave_id | ID de la batería |
-| 1 | 0x41 | Función 41 (personalizada Huawei) |
-| 2 | 0x05 | Subfunción/parámetro |
-| 3 | 0x01 | Parámetro de validación |
-| 4 | 0x04 | Código de comando |
+
+| 0 | slave_id | Battery ID |
+
+| 1 | 0x41 | Function 41 (Huawei custom) |
+
+| 2 | 0x05 | Subfunction/Parameter |
+
+| 3 | 0x01 | Validation Parameter |
+
+| 4 | 0x04 | Command Code |
+
 | 5-6 | CRC | CRC16 Modbus |
 
-### 6.3 Respuesta Esperada
+### 6.3 Expected Response
 
 ```
-Formato: [slave_id] 41 05 06 [DATA...] [CRC]
-Longitud mínima: 9 bytes
-Longitud típica: 10-12 bytes
+Format: [slave_id] 41 05 06 [DATA...] [CRC]
+Minimum length: 9 bytes
+Typical length: 10-12 bytes
 ```
 
-**Validaciones Mínimas:**
+**Minimum Validations:**
 - `response[0] == slave_id`
 - `response[1] == 0x41`
 - `len(response) >= 9`
-- Bytes 2-3 típicamente: `0x05 0x06`
+- Bytes 2-3 typically: `0x05 0x06`
 
-### 6.4 Ejemplo de Tráfico Real
+### 6.4 Example of Real Traffic
 
 ```
-TX: [D9 41 05 01 04 XX XX]        // Comando de validación
-RX: [D9 41 05 06 XX XX XX XX XX]  // Respuesta de confirmación
+TX: [D9 41 05 01 04 XX XX] // Validation Command
+RX: [D9 41 05 06 XX XX XX XX XX] // Confirmation Response
 ```
 
 ---
 
-## 7. Lectura Post-Autenticación con FC41
+## 7. Post-Authentication Reading with FC41
 
-### 7.1 Funciones Disponibles
+### 7.1 Available Functions
 
-Una vez completada la autenticación, las siguientes funciones FC41 están disponibles:
+Once authentication is complete, the following FC41 functions are available:
 
-| Subfunción | Comando | Propósito |
-|------------|---------|-----------|
-| 06 03 04 | Información del dispositivo | Leer datos del fabricante, modelo, serie |
-| 06 03 05 | Registros históricos | Leer logs almacenados |
-| 05 01 05 | Inicializar historial | Preparar sesión de historial |
-| 0C 01 05 | Cerrar historial | Finalizar sesión de historial |
+| Subfunction | Command | Purpose |
 
-### 7.2 Lectura de Información del Dispositivo
+------------|---------|-----------|
 
-#### 7.2.1 Comando
+| 06 03 04 | Device Information | Read manufacturer, model, serial number data |
+
+| 06 03 05 | Historical Logs | Read stored logs |
+
+| 05 01 05 | Initialize History | Prepare history session |
+
+| 0C 01 05 | Close History | End history session |
+
+### 7.2 Reading Device Information
+
+#### 7.2.1 Command
 
 ```
-Formato: [slave_id] 41 06 03 04 00 [index] [CRC]
+Format: [slave_id] 41 06 03 04 00 [index] [CRC]
 ```
 
-**Parámetros:**
-- **index:** 0-5 (6 fragmentos disponibles)
+**Parameters:**
+- **index:** 0-5 (6 fragments available)
 
-#### 7.2.2 Información por Índice
+#### 7.2.2 Information by Index
 
-| Índice | Contenido Típico |
+| Index | Typical Content |
+
 |--------|------------------|
-| 0 | Fabricante (VendorName), Modelo (BoardType) |
-| 1 | Número de serie (BarCode) |
-| 2 | Fecha de fabricación (Manufactured) |
-| 3 | Versión de firmware (ArchivesInfoVersion) |
-| 4 | Versión de etiqueta (ElabelVersion) |
-| 5 | Información extendida y descripción |
 
-#### 7.2.3 Formato de Respuesta
+| 0 | Manufacturer (VendorName), Model (BoardType) |
+
+| 1 | Serial Number (BarCode) |
+
+| 2 | Date Manufactured |
+
+| 3 | Firmware Version (ArchivesInfoVersion) |
+
+| 4 | Label Version |
+
+| 5 | Extended Information and Description |
+
+#### 7.2.3 Response Format
 
 ```
 [slave_id] 41 [length] [status] [data_bytes...] [CRC]
 ```
 
-**Estructura:**
+**Structure:**
 - **Bytes 0-1:** slave_id + 0x41
-- **Bytes 2-6:** Cabecera de respuesta FC41
-- **Bytes 7 hasta CRC-2:** Datos ASCII del dispositivo
-- **Últimos 2 bytes:** CRC
+- **Bytes 2-6:** FC41 Response Header
+- **Bytes 7 to CRC-2:** ASCII Device Data
+- **Last 2 bytes:** CRC
 
-#### 7.2.4 Decodificación de Datos
+#### 7.2.4 Data Decoding
 
-Los datos se devuelven como **texto ASCII** con formato clave=valor:
+Data is returned as **ASCII text** in key=value format:
 
-**Ejemplo de datos decodificados:**
+**Example Data Decoded:**
 ```
 VendorName=HUAWEI
 BoardType=ESM-48150B1
 BarCode=ABC123DEF456
 Manufactured=2023-08-15
 ArchivesInfoVersion=V1.2
-ElabelVersion=V2.1
+LabelVersion=V2.1
 Description=Lithium Battery Management System
 ```
 
-**Proceso de decodificación:**
-1. Extraer bytes de datos (desde byte 7 hasta CRC-2)
-2. Decodificar como ASCII (ignorar caracteres no imprimibles)
-3. Parsear líneas separadas por \n o \r
-4. Dividir cada línea por '=' para obtener clave-valor
-5. Limpiar espacios en blanco y caracteres especiales
+**Decoding Process:**
+1. Extract data bytes (from byte 7 to CRC-2)
+2. Decode as ASCII (ignore non-printable characters)
+3. Parse lines separated by \n or \r
+4. Split each line by '=' to obtain key-value pairs
+5. Clean up whitespace and special characters
 
-### 7.3 Lectura de Historial
+### 7.3 History Reading
 
-#### 7.3.1 Secuencia de Lectura de Historial
+#### 7.3.1 History Reading Sequence
 
-1. **Inicializar sesión:** `[slave_id] 41 05 01 05 [CRC]`
-2. **Resetear puntero:** `[slave_id] 41 06 03 05 00 00 [CRC]`
-3. **Leer registros:** `[slave_id] 41 06 03 05 [record_MSB] [record_LSB] [CRC]`
-4. **Cerrar sesión:** `[slave_id] 41 0C 01 05 [CRC]`
+1. **Initialize session:** `[slave_id] 41 05 01 05 [CRC]`
+2. **Reset pointer:** `[slave_id] 41 06 03 05 00 00 [CRC]`
+3. **Read records:** `[slave_id] 41 06 03 05 [record_MSB] [record_LSB] [CRC]`
+4. **Log out:** `[slave_id] 41 0C 01 05 [CRC]`
 
-#### 7.3.2 Formato de Registro Histórico
+#### 7.3.2 Historical Record Format
 
-Cada registro histórico contiene **32 bytes de datos** con la siguiente estructura:
+Each historical record contains **32 bytes of data** with the following structure:
 
-| Bytes | Parámetro | Factor | Descripción |
+| Bytes | Parameter | Factor | Description |
+
 |-------|-----------|--------|-------------|
-| 8-9 | Voltaje del Pack | 0.01 | Voltaje total en V |
-| 10-11 | Corriente | 0.01 | Corriente con signo en A |
-| 16 | Temperatura Mínima | 1 | Temperatura más baja en °C |
-| 18 | Temperatura Máxima | 1 | Temperatura más alta en °C |
-| 20 | SOC | 1 | Estado de carga en % |
-| 24-25 | Ah Descargados | 1 | Amperios-hora descargados |
-| 28 | Ciclos de Descarga | 1 | Número de descargas |
-| 30-31 | Voltaje de Batería | 0.01 | Voltaje de batería en V |
 
-#### 7.3.3 Detección de Fin de Historial
+| 8-9 | Pack Voltage | 0.01 | Total Voltage in V |
 
-**Registro vacío:** Todos los 32 bytes de datos son `0xFF`
+| 10-11 | Current | 0.01 | Signed Current (A) |
+
+16 | Minimum Temperature | 1 | Lowest Temperature (°C) |
+
+18 | Maximum Temperature | 1 | Highest Temperature (°C) |
+
+20 | State of Charge (SOC) | 1 | State of Charge (%) |
+
+24-25 | Ah Discharged | 1 | Ampere-hours discharged |
+
+28 | Discharge Cycles | 1 | Number of discharges |
+
+30-31 | Battery Voltage | 0.01 | Battery voltage (V) |
+
+#### 7.3.3 End of History Detection
+
+**Empty Register:** All 32 bytes of data are `0xFF`
 ```
 [slave_id] 41 [length] [status] [FF FF FF ... FF] [CRC]
 ```
 
-Esto indica que se ha alcanzado el final del historial almacenado.
+This indicates that the end of the stored history has been reached.
 
-#### 7.3.4 Procesamiento de Valores con Signo
+#### 7.3.4 Signed Value Processing
 
-**Corriente (bytes 10-11):**
-- Si valor > 32767: valor_real = valor - 65536
+**Current (bytes 10-11):**
+- If value > 32767: actual_value = value - 65536
 - Factor: 0.01
-- Positivo: Carga, Negativo: Descarga
+- Positive: Charge, Negative: Discharge
 
 ---
 
-## 8. Verificación Post-Autenticación
+## 8. Post-Authentication Verification
 
-### 8.1 Test de Autenticación Exitosa
+### 8.1 Successful Authentication Test
 
-Después de los 3 pasos, verificar el éxito intentando leer información básica:
+After the 3 steps, verify success by attempting to read basic information:
 
 ```
-Comando: [slave_id] 41 06 03 04 00 00 [CRC]
+Command: [slave_id] 41 06 03 04 00 00 [CRC]
 ```
 
-**Resultado esperado:** Respuesta FC41 con datos ASCII del dispositivo
+**Expected Result:** FC41 response with device ASCII data
 
-### 8.2 Indicadores de Éxito
+### 8.2 Success Indicators
 
-Una autenticación exitosa se confirma cuando:
-- Los 3 pasos se completan sin errores
-- El primer comando FC41 devuelve datos ASCII válidos
-- Los datos contienen campos como "VendorName=HUAWEI"
-- No hay errores de timeout en comandos posteriores
+Successful authentication is confirmed when:
+- All 3 steps are completed without errors
+- The first FC41 command returns valid ASCII data
+- The data contains fields like "VendorName=HUAWEI"
+- No timeout errors on subsequent commands
 
-### 8.3 Persistencia del Estado
+### 8.3 State Persistence
 
-- **Durante la sesión:** El estado autenticado se mantiene
-- **Tras desconexión:** Se pierde y debe repetirse
-- **Cambio de baudrate:** Requiere re-autenticación
-- **Reset de hardware:** Requiere secuencia completa
+- **During session:** Authenticated state is maintained
+- **After disconnection:** State is lost and must be repeated
+- **Baud rate change:** Requires re-authentication
+- **Hardware reset:** Requires full reset sequence
 
 ---
 
-## 9. Troubleshooting y Errores Comunes
+## 9. Troubleshooting and Common Errors
 
-### 9.1 Errores de Comunicación
+### 9.1 Communication Errors
 
-| Error | Síntoma | Causa Probable | Solución |
+| Error | Symptom | Probable Cause | Solution |
+
 |-------|---------|----------------|----------|
-| Sin respuesta en Paso 1 | Timeout | Batería en sleep mode | Ejecutar wake-up primero |
-| Respuesta incompleta | Pocos bytes | Timeout muy corto | Aumentar timeout a 1.0s+ |
-| CRC incorrecto | Error de validación | Interferencia en bus | Verificar cableado RS485 |
-| ID incorrecto | response[0] != slave_id | Dirección errónea | Verificar slave_id correcto |
 
-### 9.2 Errores de Protocolo
+| No response in Step 1 | Timeout | Battery in sleep mode | Run wake-up first |
 
-| Error | Síntoma | Causa | Solución |
+| Incomplete response | Few bytes | Very short timeout | Increase timeout to 1.0s+ |
+
+Incorrect CRC | Validation error | Bus interference | Check RS485 wiring |
+
+Incorrect ID | response[0] != slave_id | Wrong address | Verify correct slave_id |
+
+### 9.2 Protocol Errors
+
+| Error | Symptom | Cause | Solution |
+
 |-------|---------|-------|----------|
-| Paso 2 falla | Echo incorrecto | Formato de fecha/hora | Verificar construcción de comando |
-| Paso 3 sin respuesta | FC41 no responde | Pasos 1-2 fallaron | Reiniciar secuencia completa |
-| FC41 posterior falla | Función no disponible | Autenticación incompleta | Re-autenticar |
 
-### 9.3 Problemas de Hardware
+| Step 2 fails | Incorrect echo | Date/time format | Verify command construction |
 
-| Problema | Síntoma | Verificación |
+| Step 3 no response | FC41 not responding | Steps 1-2 failed | Restart entire sequence |
+
+| Subsequent FC41 fails | Function unavailable | Incomplete authentication | Re-authenticate |
+
+### 9.3 Hardware Problems
+
+| Problem | Symptom | Verification |
+
 |----------|---------|--------------|
-| Cable RS485 | Sin comunicación | Verificar pines A, B y GND |
-| Terminación | Datos corruptos | Verificar resistencias 120Ω |
-| Alimentación | Batería no responde | Verificar 48V presente |
-| Baudrate | Caracteres extraños | Confirmar 9600 bps |
 
----
+| RS485 cable | No communication | Verify pins A, B, and GND |
 
-## 10. Consideraciones de Implementación
+| Termination | Corrupted data | Verify 120Ω resistors |
 
-### 10.1 Parámetros de Tiempo
+| Power supply | Battery not responding | Verify 48V present |
 
-- **Timeout mínimo:** 0.8 segundos por comando
-- **Tiempo total:** 5-7 segundos para secuencia completa
-- **Reintentos:** Máximo 3 intentos por paso
-- **Persistencia:** Estado se mantiene durante toda la sesión
+| Baud rate | Strange characters | Confirm 9600 bps |
 
-### 10.2 Compatibilidad de Modelos
+--
 
-| Modelo | Compatibilidad | Notas |
+## 10. Implementation Considerations
+
+### 10.1 Timing Parameters
+
+- **Minimum Timeout:** 0.8 seconds per command
+- **Total Time:** 5-7 seconds for complete sequence
+- **Retries:** Maximum 3 attempts per step
+- **Persistence:** State is maintained throughout the session
+
+### 10.2 Model Compatibility
+
+| Model | Compatibility | Notes |
+
 |--------|----------------|-------|
-| ESM-48100B1 | ✅ Confirmado | Protocolo estándar |
-| ESM-48150B1 | ✅ Confirmado | Protocolo estándar |
-| ESM-48100B3 | ✅ Confirmado | Protocolo estándar |
-| ESM-48100U2 | ⚠️ Probable | No verificado |
-| Otros ESM | ⚠️ Probable | Verificar individualmente |
 
-### 10.3 Consideraciones de Seguridad
+| ESM-48100B1 | ✅ Confirmed | Standard Protocol |
 
-- **Autenticación por sesión:** Debe repetirse después de cada desconexión
-- **No es criptográfica:** El protocolo no incluye encriptación
-- **Acceso completo:** Una vez autenticado, acceso total al BMS
-- **Sin control de acceso:** No hay roles o permisos diferenciados
+| ESM-48150B1 | ✅ Confirmed | Standard Protocol |
 
-### 10.4 Integración con Sistemas
+| ESM-48100B3 | ✅ Confirmed | Standard Protocol |
 
-Para integrar en sistemas de monitoreo:
+| ESM-48100U2 | ⚠️ Probable | Not Verified |
+| Other ESMs | ⚠️ Likely | Check individually |
 
-1. **Inicializar:** Wake-up + Autenticación al establecer conexión
-2. **Mantener:** Verificar conexión periódicamente
-3. **Recuperar:** Re-autenticar automáticamente tras desconexión
-4. **Monitorear:** Usar FC03/FC04 para lectura continua de registros
-5. **Diagnosticar:** Usar FC41 para información detallada según necesidad
 
----
+### 10.3 Security Considerations
 
-## 11. Referencias y Recursos
+- **Session Authentication:** Must be repeated after each disconnection
+- **Not Cryptographic:** The protocol does not include encryption
+- **Full Access:** Once authenticated, full access to the BMS
+- **No Access Control:** There are no differentiated roles or permissions
 
-### 11.1 Herramientas de Análisis
+### 10.4 System Integration
 
-- **Analizadores Modbus:** Para capturar tráfico y verificar comandos
-- **Osciloscopios:** Para verificar señales RS485
-- **Multímetros:** Para verificar niveles de voltaje
+To integrate with monitoring systems:
 
-### 11.2 Documentación Relacionada
-
-- Especificación Modbus RTU oficial
-- Manual de registros Modbus Huawei ESM
-- Guías de cableado RS485
-
-### 11.3 Información de Contacto
-
-- Foros DIYSolar para experiencias de usuarios
-- Repositorios GitHub con implementaciones de referencia
-- Grupos de ingeniería inversa de protocolos BMS
+1. **Initialize:** Wake-up + Authentication upon connection establishment
+2. **Maintain:** Periodically verify connection
+3. **Recover:** Automatically re-authenticate after disconnection
+4. **Monitor:** Use FC03/FC04 for continuous log reading
+5. **Diagnosticate:** Use FC41 for detailed information as needed
 
 ---
 
-**Nota Final:** Este protocolo fue desarrollado mediante ingeniería inversa y análisis de tráfico. Huawei no proporciona documentación oficial sobre esta secuencia de autenticación. Usar bajo su propio riesgo y siempre verificar compatibilidad con hardware específico.
+## 11. References and Resources
+
+### 11.1 Analysis Tools
+
+- **Analyzers Modbus:** To capture traffic and verify commands
+- **Oscilloscopes:** To verify RS485 signals
+- **Multimeters:** To verify voltage levels
+
+### 11.2 Related Documentation
+
+- Official Modbus RTU Specification
+- Huawei ESM Modbus Registers Manual
+- RS485 Wiring Guides
+
+### 11.3 Contact Information
+
+- DIYSolar forums for user experiences
+- GitHub repositories with reference implementations
+- BMS protocol reverse engineering groups
+
+---
+
+**Final Note:** This protocol was developed through reverse engineering and traffic analysis. Huawei does not provide official documentation on this authentication sequence. Use at your own risk and always verify compatibility with specific hardware.
