@@ -1,76 +1,94 @@
-# Modbus Web UI para Baterías Huawei ESM-48150B1
+# Modbus Web UI for Huawei ESM-48150B1 Batteries
 
-![Versión de Python](https://img.shields.io/badge/python-3.12+-blue.svg)
-![Licencia](https://img.shields.io/badge/license-BSD-green.svg)
-![Estado](https://img.shields.io/badge/estado-beta-orange.svg)
+![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)
+![License](https://img.shields.io/badge/license-BSD-green.svg)
+![Status](https://img.shields.io/badge/estado-beta-orange.svg)
 
-## 🔋 Introducción
+## 🔋 Introduction
 
-**Sistema avanzado de monitoreo y control para baterías Huawei ESM-48150B1** con protocolo Modbus RTU nativo. Este proyecto implementa un cliente Modbus personalizado que reemplaza PyModbus con una solución optimizada específicamente para baterías Huawei, incluyendo autenticación automática y soporte completo para funciones propietarias.
-> **⚡ AUN EN FASE DE DESARROLLO ALGUNAS FUNCIONES ESTAN INCOMPLETAS.:** Version 0.5
+**Advanced monitoring and control system for Huawei ESM-48150B1 batteries** with native Modbus RTU protocol. This project implements a custom Modbus client that replaces PyModbus with a solution optimized specifically for Huawei batteries, including automatic authentication and full support for proprietary functions.
 
-> **⚡ Características Destacadas:** Monitoreo simultáneo de múltiples baterías, interfaz web moderna, protcolo Huawei nativo, sistema de diagnósticos avanzado y exportación de datos detallados.
- ## 📸 Vista del Sistema
+> **⚡ STILL UNDER DEVELOPMENT. SOME FEATURES ARE INCOMPLETE.:** Version 0.5
+
+> **⚡ Key Features:** Simultaneous monitoring of multiple batteries, modern web interface, native Huawei protocol, advanced diagnostic system, and detailed data export.
+
+** ## 📸 System View
 
 <div align="center">
-  <h3>Interfaz Principal de Monitoreo</h3>
-  <img src="static/images/Monitordebaterias.png" alt="Interfaz principal del sistema" style="width: 90%; max-width: 800px; border: 2px solid #ddd; border-radius: 8px;">
-  <p><i>Panel principal con dashboard de múltiples baterías en tiempo real</i></p>
+
+<h3>Main Monitoring Interface</h3>
+
+<img src="static/images/Monitordebaterias.png" alt="Main system interface" style="width: 90%; max-width: 800px; border: 2px solid #ddd; border-radius: 8px;">
+
+<p><i>Main panel with real-time dashboard of multiple batteries</i></p>
+
 </div>
 
 <div align="center">
-  <h3>Dashboard de Batería Individual</h3>
-  <img src="static/images/Vista moderna.png" alt="Dashboard detallado de batería" style="width: 90%; max-width: 800px; border: 2px solid #ddd; border-radius: 8px;">
-  <p><i>Vista detallada con datos de celdas, gráficos y diagnósticos</i></p>
+
+<h3>Individual Battery Dashboard</h3>
+
+<img src="static/images/Vista moderna.png" alt="Detailed battery dashboard" style="width: 90%; max-width: 800px; border: 2px solid #ddd; border-radius: 8px;">
+
+<p><i>Detailed view with cell data, Graphics and Diagnostics</i></p>
 </div>
 
 <div align="center">
-  <h3>Sistema de Diagnósticos Avanzados</h3>
-  <img src="static/images/Celdas.png" alt="Panel de diagnósticos" style="width: 90%; max-width: 800px; border: 2px solid #ddd; border-radius: 8px;">
-  <p><i>Análisis completo de registros y exportación de datos</i></p>
+
+<h3>Advanced Diagnostics System</h3>
+
+<img src="static/images/Celdas.png" alt="Diagnostics Panel" style="width: 90%; max-width: 800px; border: 2px solid #ddd; border-radius: 8px;">
+
+<p><i>Complete Log Analysis and Data Export</i></p>
 </div>
 
-## 🚀 Características Principales
+## 🚀 Main Features
 
-### 🔌 Sistema de Comunicación Avanzado
-- **Cliente Modbus Nativo**: Implementación personalizada en `core.py` que reemplaza PyModbus
-- **Protocolo Huawei Optimizado**: Soporte completo para FC41 y secuencias de autenticación
-- **Conexión Unificada**: Sistema simplificado de conexión única con gestión automática
-- **Thread-Safe**: Operaciones concurrentes seguras para múltiples dispositivos
+### 🔌 Advanced Communication System
+- **Native Modbus Client**: Custom implementation in `core.py` that replaces PyModbus
+- **Optimized Huawei Protocol**: Full support for FC41 and authentication sequences
+- **Unified Connection**: Simplified single connection system with automatic management
+- **Thread-Safe**: Safe concurrent operations for multiple Devices
 
-### 📊 Monitoreo Multi-Batería
-- **Monitor Simultáneo**: Seguimiento en tiempo real de múltiples baterías Huawei
-- **Sistema de Cache Inteligente**: Gestión optimizada de datos por dispositivo con `device_cache.py`
-- **Historial Automático**: Grabación periódica de datos para análisis temporal
-- **Datos de Celdas Individuales**: Monitoreo detallado de voltajes y temperaturas por celda
+### 📊 Multi-Battery Monitoring
+- **Simultaneous Monitoring**: Real-time tracking of multiple Huawei batteries
+- **Intelligent Cache System**: Optimized data management per device with `device_cache.py`
+- **Automatic History**: Periodic data recording for time-series analysis
+- **Individual Cell Data**: Detailed monitoring of voltages and temperatures per cell
 
-### 🎛️ Interfaz Web Moderna
-- **Dashboard Industrial**: Vista unificada con gráficos en tiempo real
-- **Sistema de Pestañas**: Organización modular de información (Estado, Celdas, Diagnósticos, Avanzado)
-- **Diagnósticos Avanzados**: Visualización estructurada de todos los registros mapeados
-- **Exportación de Datos**: Múltiples formatos (JSON, CSV, PDF)
+### 🎛️ Modern Web Interface
+- **Industrial Dashboard**: Unified view with real-time graphs
+- **Tab System**: Modular organization of information (Status, Cells, Diagnostics, Advanced)
+- **Advanced Diagnostics**: Structured visualization of all mapped records
+- **Data Export**: Multiple formats (JSON, CSV, PDF)
 
-### 🔧 Funcionalidades Técnicas
-- **Detección Automática**: Identificación inteligente de baterías en la red
-- **Gestión de Estados**: Control avanzado de conexión, autenticación y monitoreo
-- **Sistema de Alertas**: Notificaciones automáticas por condiciones críticas
-- **API REST Completa**: Endpoints para integración con sistemas externos
+### 🔧 Technical Features
+- **Automatic Detection**: Intelligent battery identification The Network
+- **State Management**: Advanced connection control, authentication, and monitoring
+- **Alert System**: Automatic notifications for critical conditions
+- **Full REST API**: Endpoints for integration with external systems
 
-## 🎯 Dispositivos Compatibles
+## 🎯 Compatible Devices
 
-### Totalmente Soportado
-- **Huawei ESM-48150B1** (ID típico: 217)
-  - Autenticación automática
-  - Lectura de información extendida (FC41)
-  - Monitoreo de celdas individuales
-  - Datos de fabricación y diagnóstico
+### Fully Supported
+- **Huawei ESM-48150B1** (Typical ID: 217)
 
-### Soporte Básico
-- **Dispositivos Modbus RTU genéricos**
-  - Funciones estándar (FC01-FC06, FC15-FC16)
-  - Sin autenticación ni funciones propietarias
+- Automatic authentication
 
-## 🏗️ Arquitectura del Sistema
+- Extended information reading (FC41)
+
+- Individual cell monitoring
+
+- Manufacturing and diagnostic data
+
+### Basic Support
+- **Generic Modbus RTU Devices**
+
+- Standard functions (FC01-FC06, FC15-FC16)
+
+- No authentication or proprietary functions
+
+## 🏗️ System Architecture
 
 ### Componentes Principales
 ```
@@ -97,46 +115,46 @@ static/js/
 └── vista-industrial/     # Estilos y componentes industriales
 ```
 
-## 📚 Documentación Completa
+## 📚 Complete Documentation
 
-Para obtener información detallada sobre cada aspecto del sistema, consulta las siguientes guías especializadas:
+For detailed information on every aspect of the system, please consult the following specialized guides:
 
-### 🚀 **Primeros Pasos**
-- 🔧 [**Instalación y Configuración**](docs/INSTALACION.md) - Puesta en marcha paso a paso
-- 🔌 [**Configuración de Hardware**](docs/CONFIGURACION_HARDWARE.md) - Adaptadores RS485 y conexiones físicas  
-- ▶️ [**Guía de Uso**](docs/USO.md) - Manual completo de la interfaz web
+### 🚀 **Getting Started**
+- 🔧 [**Installation and Configuration**](docs/INSTALACION.md) - Step-by-step setup
+- 🔌 [**Hardware Configuration**](docs/CONFIGURACION_HARDWARE.md) - RS485 adapters and physical connections
+- ▶️ [**User Guide**](docs/USO.md) - Complete web interface manual
 
-### 🏗️ **Arquitectura y Funcionalidades**
-- 🏛️ [**Arquitectura del Sistema**](docs/ARQUITECTURA_SISTEMA.md) - Cliente nativo vs PyModbus
-- 🔋 [**Monitor de Baterías**](docs/MONITOR_BATERIAS.md) - Sistema multi-batería y threading
-- 🔎 [**Detección de Dispositivos**](docs/DETECCION_DISPOSITIVOS.md) - Escaneo automático y configuración
+### 🏗️ **Architecture and Functionalities**
+- 🏛️ [**System Architecture**](docs/ARQUITECTURA_SISTEMA.md) - Native client vs. PyModbus
+- 🔋 [**Monitor of Batteries**](docs/MONITOR_BATERIAS.md) - Multi-battery system and threading
+- 🔎 [**Device Detection**](docs/DETECCION_DISPOSITIVOS.md) - Automatic scanning and configuration
 
-### 🔧 **Configuración Avanzada**
-- ⚙️ [**Configuración Avanzada**](docs/CONFIGURACION_AVANZADA.md) - Timeouts, optimización y parámetros expertos
-- 🌐 [**API y Integración**](docs/API_REFERENCIA.md) - Documentación completa de endpoints
-- 🔋 [**Protocolo Huawei**](docs/PROTOCOLO_HUAWEI.md) - Detalles técnicos de autenticación y FC41
+### 🔧 **Advanced Configuration**
+- ⚙️ [**Advanced Configuration**](docs/CONFIGURACION_AVANZADA.md) - Timeouts, optimization, and expert parameters
+- 🌐 [**API and Integration**](docs/API_REFERENCIA.md) - Complete endpoint documentation
+- 🔋 [**Huawei Protocol**](docs/PROTOCOLO_HUAWEI.md) - Authentication and FC41 technical details
 
-### 📋 **Documentación Técnica del Protocolo**
-- 📖 [**Registros Modbus Huawei ESM**](docs/REGISTROS_MODBUS.md) - Especificación completa de registros, umbrales y configuraciones
-- 🔐 [**Protocolo de Autenticación Huawei**](docs/Authentificacion.md) - Secuencia propietaria de 3 pasos y funciones FC41
-- 🔐 [**Protocolo del giroscopio**](docs/Giroscopio.md) - Secuencia de desactivacion de giroscopio con Software Liverado
+### 📋 **Protocol Technical Documentation**
+- 📖 [**Records Modbus Huawei ESM**](docs/REGISTROS_MODBUS.md) - Complete specification of registers, thresholds, and configurations
+- 🔐 [**Huawei Authentication Protocol**](docs/Authentificacion.md) - Proprietary 3-step sequence and FC41 functions
+- 🔐 [**Gyroscope Protocol**](docs/Giroscopio.md) - Gyroscope deactivation sequence with Liberado Software
 
-### 🛠️ **Diagnósticos y Soporte**
-- 🔍 [**Diagnósticos Avanzados**](docs/DIAGNOSTICOS_AVANZADOS.md) - Análisis de registros y datos de celdas
-- ❓ [**Solución de Problemas**](docs/SOLUCION_PROBLEMAS.md) - Troubleshooting y errores comunes
-- 🤝 [**Guía de Contribución**](docs/CONTRIBUCIONES.md) - Cómo colaborar con el proyecto
+### 🛠️ **Diagnostics and Support**
+- 🔍 [**Advanced Diagnostics**](docs/DIAGNOSTICOS_AVANZADOS.md) - Analysis of registers and cell data
+- ❓ [**Troubleshooting**](docs/SOLUCION_PROBLEMAS.md) - Troubleshooting and common errors
+- 🤝 [**Guide to Contribution**](docs/CONTRIBUTIONS.md) - How to collaborate with the project
 
 ---
 
-## 📋 Instalación Rápida
+## 📋 Quick Installation
 
-### Requisitos del Sistema
-- **Python 3.10+** (recomendado 3.12+)
-- **Puerto COM disponible** (USB-RS485 o virtual)
-- **4GB RAM mínimo** (8GB recomendado)
-- **Conexión a Internet** (para dependencias)
+### System Requirements
+- **Python 3.10+** (3.12+ recommended)
+- **Available COM port** (USB-RS485 or virtual)
+- **4GB RAM minimum** (8GB recommended)
+- **Internet connection** (for dependencies)
 
-### Instalación Automática
+### Automatic Installation
 ```bash
 # Clonar repositorio
 git clone https://github.com/williamsioSapo/Huawei_Battery_monitor
@@ -157,19 +175,19 @@ pip install -r requirements.txt
 python app.py
 ```
 
-### Acceso a la Aplicación
-- **URL Local**: `http://127.0.0.1:5000`
-- **Red Local**: `http://[IP-del-servidor]:5000`
+### Accessing the Application
+- **Local URL**: `http://127.0.0.1:5000`
+- **Local Network**: `http://[server-IP]:5000`
 
-## 🔧 Configuración Rápida
+## 🔧 Quick Setup
 
-### 1. Configuración Automática
-Al ejecutar por primera vez, el sistema detectará automáticamente:
-- Puertos COM disponibles
-- Parámetros óptimos de comunicación
-- Dispositivos conectados en la red
+### 1. Automatic Setup
+On first-time operation, the system will automatically detect:
+- Available COM ports
+- Optimal communication parameters
+- Devices connected to the network
 
-### 2. Parámetros Típicos para Huawei ESM-48150B1
+### 2. Typical Parameters for Huawei ESM-48150B1
 ```json
 {
   "port": "COM8",           # ver en panel de control
@@ -182,39 +200,39 @@ Al ejecutar por primera vez, el sistema detectará automáticamente:
 }
 ```
 
-## 📊 Uso del Sistema
+## 📊 System Usage
 
-### 🔌 Conexión Inicial
-1. **Configurar Puerto**: Seleccionar puerto COM correcto
-2. **Conectar Sistema**: Botón "Conectar al Sistema" 
-3. **Inicializar Baterías**: Proceso automático de detección y autenticación
-4. **Abrir Dashboard**: Acceso al panel de monitoreo principal
+### 🔌 Initial Connection
+1. **Configure Port**: Select the correct COM port
+2. **Connect System**: Click the "Connect to System" button
+3. **Initialize Batteries**: Automatic detection and authentication process
+4. **Open Dashboard**: Access to the main monitoring panel
 
-### 📈 Monitoreo en Tiempo Real
-- **Dashboard Principal**: Vista general de todas las baterías
-- **Datos por Celda**: Voltajes y temperaturas individuales
-- **Gráficos Históricos**: Tendencias de voltaje, corriente y SOC
-- **Alertas Automáticas**: Notificaciones por condiciones anómalas
+### 📈 Real-Time Monitoring
+- **Main Dashboard**: Overview of all batteries
+- **Data per Cell**: Individual voltages and temperatures
+- **Historical Graphs**: Voltage, current, and SOC trends
+- **Automatic Alerts**: Notifications for abnormal conditions
 
-### 🔧 Operaciones Avanzadas
-- **Lectura de Registros**: Acceso directo a registros Modbus
-- **Escritura de Parámetros**: Modificación controlada de configuraciones
-- **Diagnósticos Completos**: Análisis exhaustivo del estado del sistema
-- **Exportación de Datos**: Reportes en múltiples formatos
+### 🔧 Advanced Operations
+- **Read Registers**: Direct access to Modbus registers
+- **Write Parameters**: Controlled modification of configurations
+- **Comprehensive Diagnostics**: Exhaustive analysis of the system status
+- **Data Export**: Reports in multiple formats
 
-## 🛠️ Características Técnicas Avanzadas
+## 🛠️ Advanced Technical Features
 
-### Cliente Modbus Personalizado
-- **Eliminación de PyModbus**: Implementación nativa más eficiente
-- **Timeouts Adaptativos**: Configuración automática según el tipo de operación
-- **Reconexión Automática**: Recuperación ante pérdida de comunicación
-- **Thread Safety**: Operaciones concurrentes seguras
+### Custom Modbus Client
+- **PyModbus Elimination**: More efficient native implementation
+- **Adaptive Timeouts**: Automatic configuration based on operation type
+- **Automatic Reconnection**: Recovery after communication loss
+- **Thread Safety**: Safe concurrent operations
 
-### Sistema de Monitoreo
-- **Polling Inteligente**: Frecuencia adaptativa según la actividad
-- **Cache Multi-Nivel**: Optimización de acceso a datos frecuentes
-- **Historial Persistente**: Almacenamiento automático para análisis
-- **Detección de Anomalías**: Algoritmos de identificación de patrones inusuales
+### Monitoring System
+- **Intelligent Polling**: Adaptive polling frequency based on activity
+- **Multi-Level Cache**: Optimized access to frequently used data
+- **Persistent History**: Automatic storage for analysis
+- **Anomaly Detection**: Algorithms for identifying unusual patterns
 
 ### API REST Nativa
 ```javascript
@@ -254,67 +272,72 @@ ModbusReader_SR/
     └── PROTOCOLO_AUTENTICACION.md # Protocolo propietario Huawei
 ```
 
-## 🔍 Diagnósticos y Troubleshooting
+## 🔍 Diagnostics and Troubleshooting
 
-### Herramientas de Diagnóstico Integradas
-- **Monitor de Conexión**: Estado en tiempo real de la comunicación
-- **Analizador de Registros**: Visualización estructurada de datos
-- **Log del Sistema**: Registro detallado de operaciones
-- **Test de Comunicación**: Verificación automática de conectividad
+### Integrated Diagnostic Tools
+- **Connection Monitor**: Real-time communication status
+- **Log Analyzer**: Structured data visualization
+- **System Log**: Detailed operation log
+- **Communication Test**: Automatic connectivity verification
 
-### Problemas Comunes y Soluciones
+### Common Problems and Solutions
 
-| Problema | Causa Probable | Solución |
+| Problem | Probable Cause | Solution |
+
 |----------|----------------|----------|
-| No detecta puerto COM | Driver USB-RS485 | Verificar en Administrador de Dispositivos |
-| Timeout en comunicación | Parámetros serie incorrectos | Usar 9600-8N1 para Huawei |
-| Fallo de autenticación | ID de esclavo incorrecto | Verificar ID 217 para ESM-48150B1 |
-| Datos incompletos de celdas | Batería en modo ahorro | Despertar batería con operación inicial |
 
-## 🚀 Mejoras desde la Versión Anterior
+| COM port not detected | USB-RS485 driver | Check in Device Manager |
 
-### ✅ Implementado
-- ✨ **Cliente Modbus nativo** - Elimina dependencia de PyModbus
-- 🔋 **Monitoreo multi-batería** - Soporte simultáneo para múltiples dispositivos  
-- 🎛️ **Interfaz unificada** - Sistema de conexión simplificado
-- 📊 **Diagnósticos avanzados** - Visualización estructurada completa
-- 💾 **Cache inteligente** - Gestión optimizada de datos
-- 🔄 **Threading seguro** - Operaciones concurrentes estables
+| Communication timeout | Incorrect serial parameters | Use 9600-8N1 for Huawei |
 
-### 🔄 En Desarrollo
-- 📱 **App móvil** - Interface nativa para dispositivos móviles
-- ☁️ **Integración cloud** - Sincronización con servicios externos
-- 🤖 **IA predictiva** - Algoritmos de predicción de fallos
-- 📈 **Analytics avanzado** - Métricas de rendimiento y eficiencia
+| Authentication failure | Incorrect slave ID | Check ID 217 for ESM-48150B1 |
 
-## 🤝 Soporte y Comunidad
+| Incomplete cell data | Battery in power-saving mode | Wake battery on initial operation |
 
-### Recursos de Ayuda
-- 📖 **Documentación**: Carpeta `docs/` con guías detalladas
+## 🚀 Improvements from the Previous Version
+
+### ✅ Implemented
+- ✨ **Native Modbus Client** - Eliminates dependency on PyModbus
+- 🔋 **Multi-Battery Monitoring** - Simultaneous support for multiple devices
+- 🎛️ **Unified Interface** - Simplified connection system
+- 📊 **Advanced Diagnostics** - Complete structured visualization
+- 💾 **Intelligent Cache** - Optimized data management
+- 🔄 **Secure Threading** - Stable concurrent operations
+
+### 🔄 Under Development
+- 📱 **Mobile App** - Native interface for mobile devices
+- ☁️ **Cloud Integration** - Synchronization with external services
+- 🤖 **Predictive AI** - Failure prediction algorithms
+- 📈 **Advanced Analytics** - Metrics of Performance and Efficiency
+
+## 🤝 Support and Community
+
+### Help Resources
+- 📖 **Documentation**: Folder `docs/` with detailed guides
 - 🐛 **Issues**: [GitHub Issues](https://github.com/nestorcal/ModbusReader_SR/issues)
-- 💬 **Discusiones**: [GitHub Discussions](https://github.com/nestorcal/ModbusReader_SR/discussions)
-- 📧 **Contacto**: [Información de contacto del proyecto]
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/nestorcal/ModbusReader_SR/discussions)
+- 📧 **Contact**: [Project contact information]
 
-### Contribuciones
-Las contribuciones son bienvenidas! Ver [CONTRIBUCIONES.md](docs/CONTRIBUCIONES.md) para:
-- 🔧 Nuevas características
-- 🐛 Corrección de errores  
-- 📚 Mejoras en documentación
-- 🧪 Pruebas con nuevos dispositivos
+### Contributions
+Contributions are welcome! See [CONTRIBUTIONS.md](docs/CONTRIBUTIONS.md) for:
+- 🔧 New features
+- 🐛 Bug fixes
+- 📚 Improved documentation
+- 🧪 Testing with new devices
 
-## 📜 Licencia
+## 📜 License
 
-Este proyecto está bajo la **Licencia BSD**. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+This project is licensed under the **BSD License**. See the [LICENSE](LICENSE) file for details.
 
-## 🙏 Agradecimientos
+## 🙏 Acknowledgments
 
-- **Comunidad PyModbus** - Base para el desarrollo inicial
-- **Ingeniería Inversa** - Análisis del protocolo Huawei propietario
-- **Contribuidores** - Pruebas, feedback y mejoras
-- **Huawei** - Fabricante del hardware ESM-48150B1
+- **PyModbus Community** - Foundation for initial development
+- **Reverse Engineering** - Analysis of Huawei's proprietary protocol
+- **Contributors** - Testing, feedback, and improvements
+- **Huawei** - Manufacturer of the ESM-48150B1 hardware
 
 ---
 
-> **⚠️ Descargo de Responsabilidad**: Este software es independiente y no está afiliado oficialmente con Huawei. Úsalo bajo tu propia responsabilidad en sistemas de producción.
+> **⚠️ Disclaimer**: This software is independent and not officially affiliated with Huawei. Use it at your own risk in production systems.
 
-**Última actualización**: Diciembre 2024 | **Versión**: 2.0-beta
+**Last Update**: December 2024 | **Version**: 2.0-beta
